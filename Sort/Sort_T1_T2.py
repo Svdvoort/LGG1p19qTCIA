@@ -24,7 +24,7 @@ for i_patient_folder in patient_folders:
 
             if i_index == 0:
                 repetition_time = dicom_info[0x18, 0x80].value
-                if repetition_time < 1000:
+                if repetition_time > 1000:
                     scan_type = 'T2'
                     scan_number = '2'
 

@@ -6,6 +6,7 @@ import zipfile
 import StringIO
 import shutil
 import os
+from glob import glob
 
 
 class XNATExplorer:
@@ -139,8 +140,6 @@ class XNATExplorer:
         return dicom_tags
 
 
-
-
     def get_selected_experiment_resource_list(self, subject, experiment, folder_name, search_key):
         experiment_uri = self.subjects_url + subject['label'] + '/experiments/' + experiment['ID']
         resource_uri = experiment_uri + '/resources/' + folder_name + '/files/'
@@ -265,6 +264,8 @@ class XNATExplorer:
 
         return has_file
 
+
+
     def upload_file(self, subject, folder_name, file_name, file_location):
         subject_uri = self.subjects_url + subject['label']
         folder_uri = subject_uri + '/resources/' + folder_name + '/'
@@ -276,6 +277,31 @@ class XNATExplorer:
         self.session.put(file_uri, files=upload_file)
 
         return
+
+    def zipdir(self, path, ziph):
+        # ziph is zipfile handle
+        for root, dirs, files in os.walk(path):
+            for dir_name in dirs:
+                files = glob(os.path.join(root, dir_name, '*.dcm'))
+                for file_name in files:
+                    modality = os.path.basename(os.path.normpath(dir_name))
+                    simple_file_name = os.path.basename(os.path.normpath(file_name))
+                    ziph.write(file_name, os.path.join(modality, simple_file_name))
+
+    def upload_directory_to_prearchive(self, directory):
+        prearchive_url = self.xnat_root + 'data/services/import'
+        prearchive_url = prearchive_url + '?dest=/prearchive/projects/' + self.project_name
+
+        print(prearchive_url)
+
+        zip_file_name = os.path.join(directory, 'image_data.zip')
+        zipf = zipfile.ZipFile(zip_file_name, 'w', zipfile.ZIP_DEFLATED)
+        self.zipdir(directory, zipf)
+        zipf.close()
+
+        upload_file = {'files': open(zip_file_name, 'rb')}
+        response = self.session.post(prearchive_url, files=upload_file)
+        print(response.content)
 
     def set_experiment_label(self, subject, experiment, new_label):
         experiment_uri = self.subjects_url + subject['label'] + '/experiments/' + experiment['ID']
@@ -330,8 +356,6 @@ class XNATExplorer:
         file_uri = scan_folder_uri + '/resources/' + folder_name + '/files/' + file_name
 
         response = self.session.get(file_uri, stream=True)
-        print(file_uri)
-        print(response.status_code)
 
         if response.status_code == 200:
             with open(local_location, 'wb') as f:
