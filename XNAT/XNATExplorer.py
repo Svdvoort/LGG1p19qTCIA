@@ -111,7 +111,7 @@ class XNATExplorer:
 
         regex = re.compile(expression)
 
-        matches = [i_scan for i_scan in scans if re.match(regex, i_scan['ID'])]
+        matches = [i_scan for i_scan in scans if re.match(regex, i_scan['type'])]
 
         return matches
 
@@ -292,7 +292,6 @@ class XNATExplorer:
         prearchive_url = self.xnat_root + 'data/services/import'
         prearchive_url = prearchive_url + '?dest=/prearchive/projects/' + self.project_name
 
-        print(prearchive_url)
 
         zip_file_name = os.path.join(directory, 'image_data.zip')
         zipf = zipfile.ZipFile(zip_file_name, 'w', zipfile.ZIP_DEFLATED)
@@ -301,13 +300,7 @@ class XNATExplorer:
 
         upload_file = {'files': open(zip_file_name, 'rb')}
         response = self.session.post(prearchive_url, files=upload_file)
-        print(response.content)
 
-    def get_prearchive(self):
-        prearchive_url = self.xnat_root + 'data/prearchive/projects/' + self.project_name + '?format=json'
-
-        bla = self.session.get(prearchive_url).json()
-        print(bla['ResultSet']['Result'])
 
 
     def archive_session(self):
@@ -318,18 +311,12 @@ class XNATExplorer:
 
         for i_session in prearchive_sessions:
             session_url = self.xnat_root + 'data/prearchive/projects/' + self.project_name + '/' + i_session['timestamp'] + '/' + i_session['folderName']
-            print(session_url)
             bla = self.session.post(session_url + '?action=commit')
-            print(bla.content)
-
-
 
 
     def set_experiment_label(self, subject, experiment, new_label):
         experiment_uri = self.subjects_url + subject['label'] + '/experiments/' + experiment['ID']
         label_uri = experiment_uri + '?label=' + new_label
-
-        print(label_uri)
 
         self.session.put(label_uri)
 
@@ -515,7 +502,6 @@ class XNATExplorer:
         elif gender.upper() == 'F':
             gender = 'female'
 
-        print(gender)
         if gender != 'male' and gender != 'female':
             raise Exception("Gender should be male or female")
 
