@@ -58,6 +58,13 @@ for i_patient_folder in patient_folders:
                         scan_type = 'PD'
                         scan_number = '3'
 
+                        series_UID = str(dicom_info[0x20, 0xe].value)
+                        last_number_UID = int(series_UID[-1])
+
+                        series_UID = series_UID[:-2]
+                        series_UID = series_UID + str(last_number_UID + 1)
+                        dicom_info[0x20, 0xe].value = series_UID
+
                     save_dir = os.path.join(out_dir, patient_ID, scan_type)
                     slice_number = len(glob(os.path.join(save_dir, '*.dcm')))
                     slice_number = str(slice_number).zfill(5)
