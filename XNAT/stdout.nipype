@@ -1,8 +1,8 @@
 Chris Rorden's dcm2nii :: 4AUGUST2014 (Debian) 64bit BSD License
 reading preferences file config.ini
-Data will be exported to /media/DataDisk/TCIA_LGG/Processed_T1T2/LGG-223/
-Validating 36 potential DICOM images.
-Found 36 DICOM images.
-Converting 36/36  volumes: 1
-00024.dcm->LGG-223.nii
-GZip...LGG-223.nii.gz
+Data will be exported to /media/DataDisk/TCIA_LGG/Processed_T1T2/LGG-313/
+Validating 51 potential DICOM images.
+Found 51 DICOM images.
+Converting 51/51  volumes: 1
+00030.dcm->LGG-313.nii
+GZip...LGG-313.nii.gz
