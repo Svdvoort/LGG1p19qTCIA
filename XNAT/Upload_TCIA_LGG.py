@@ -4,7 +4,7 @@ from glob import glob
 import dicom as pydicom
 import pandas as pd
 from nipype.interfaces.dcm2nii import Dcm2nii
-
+import shutil
 
 # Specificy xnat url
 xnat_root = 'http://bigr-rad-xnat.erasmusmc.nl/'
@@ -32,16 +32,25 @@ def make_and_upload_nifti(subject_name, subject_XNAT, scan_sequence):
     converter.inputs.date_in_filename = False
     converter.inputs.events_in_filename = False
     converter.inputs.id_in_filename = True
-    converter.inputs.terminal_output = 'none'
+    converter.inputs.terminal_output = 'file'
     convert_result = converter.run()
 
     nifti_file = convert_result.outputs.converted_files
 
-    experiment = explorer.get_experiments(new_subject)[0]
-    scan = explorer.find_scan(new_subject, experiment, scan_sequence)[0]
+    shutil.move(nifti_file, os.path.join(subject_directory,
+                                         scan_sequence + '.nii.gz'))
+    nifti_file = os.path.join(subject_directory, scan_sequence + '.nii.gz')
 
-    explorer.upload_scan_resource(new_subject, experiment, scan, 'NIFTI',
-                                  'image.nii.gz', nifti_file)
+    upload_nifti(subject_XNAT, scan_sequence, nifti_file, 'NIFTI', 'image.nii.gz')
+    return
+
+
+def upload_nifti(subject_XNAT, scan_sequence, nifti_file, XNAT_folder, XNAT_name):
+    experiment = explorer.get_experiments(subject_XNAT)[0]
+    scan = explorer.find_scan(subject_XNAT, experiment, scan_sequence)[0]
+
+    explorer.upload_scan_resource(subject_XNAT, experiment, scan, XNAT_folder,
+                                  XNAT_name, nifti_file)
     return
 
 explorer = XNATExplorer.XNATExplorer(xnat_root, project_name)
@@ -85,7 +94,21 @@ for i_index, i_subject in enumerate(subject_names):
 
     explorer.archive_session()
 
+    # Make nifti from the original DICOM
     make_and_upload_nifti(i_subject, new_subject, 'T1')
     make_and_upload_nifti(i_subject, new_subject, 'T2')
     if os.path.exists(os.path.join(DICOM_folder, i_subject, 'PD')):
         make_and_upload_nifti(i_subject, new_subject, 'PD')
+
+    # Upload registered niftis, which were segmented
+    T1_registered_nifti = os.path.join(segmentation_folder, i_subject,
+                                       i_subject + '_T1.nii.gz')
+    T2_registered_nifti = os.path.join(segmentation_folder, i_subject,
+                                       i_subject + '_T2.nii.gz')
+    Segmentation_registered_nifti = os.path.join(segmentation_folder, i_subject,
+                                                 i_subject + '-Segmentation.nii.gz')
+
+    upload_nifti(new_subject, 'T1', T1_registered_nifti, 'REGISTERED', 'image.nii.gz')
+    upload_nifti(new_subject, 'T2', T2_registered_nifti, 'REGISTERED', 'image.nii.gz')
+    upload_nifti(new_subject, 'T1', Segmentation_registered_nifti, 'REGISTERED', 'segmentation.nii.gz')
+    upload_nifti(new_subject, 'T2', Segmentation_registered_nifti, 'REGISTERED', 'segmentation.nii.gz')
