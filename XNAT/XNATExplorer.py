@@ -303,6 +303,28 @@ class XNATExplorer:
         response = self.session.post(prearchive_url, files=upload_file)
         print(response.content)
 
+    def get_prearchive(self):
+        prearchive_url = self.xnat_root + 'data/prearchive/projects/' + self.project_name + '?format=json'
+
+        bla = self.session.get(prearchive_url).json()
+        print(bla['ResultSet']['Result'])
+
+
+    def archive_session(self):
+        prearchive_url = self.xnat_root + 'data/prearchive/projects/' + self.project_name + '?format=json'
+
+        response = self.session.get(prearchive_url).json()
+        prearchive_sessions = response['ResultSet']['Result']
+
+        for i_session in prearchive_sessions:
+            session_url = self.xnat_root + 'data/prearchive/projects/' + self.project_name + '/' + i_session['timestamp'] + '/' + i_session['folderName']
+            print(session_url)
+            bla = self.session.post(session_url + '?action=commit')
+            print(bla.content)
+
+
+
+
     def set_experiment_label(self, subject, experiment, new_label):
         experiment_uri = self.subjects_url + subject['label'] + '/experiments/' + experiment['ID']
         label_uri = experiment_uri + '?label=' + new_label
@@ -456,6 +478,8 @@ class XNATExplorer:
                 age = age.string
 
         return age
+
+
 
     def get_scanner(self, subject, experiment):
         experiment_url = self.xnat_root + experiment['URI'] + '?format=xml'

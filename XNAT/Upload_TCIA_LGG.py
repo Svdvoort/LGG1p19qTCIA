@@ -24,7 +24,7 @@ subject_names = genetics['Filename']
 status_1p19q = genetics['1p/19q']
 tumor_grade = genetics['Grade']
 tumor_type = genetics['Type']
-
+subject_names = subject_names[0:3]
 for i_index, i_subject in enumerate(subject_names):
     print(i_subject)
     new_subject = explorer.create_subject(i_subject)
@@ -44,31 +44,36 @@ for i_index, i_subject in enumerate(subject_names):
     age = dicom_loaded[0x10,0x1010].value[0:3]
     gender = dicom_loaded[0x10, 0x40].value
 
-    explorer.set_gender(new_subject, gender)
-    explorer.set_age(new_subject, age)
+    # explorer.set_gender(new_subject, gender)
+    # explorer.set_age(new_subject, age)
+    #
+    # explorer.set_custom_field(new_subject, 'deletion_1p', patient_1p_deletion)
+    # explorer.set_custom_field(new_subject, 'deletion_19q', patient_19q_deletion)
+    # explorer.set_custom_field(new_subject, 'grade', patient_grade)
+    # explorer.set_custom_field(new_subject, 'type', patient_type.lower())
 
-    explorer.set_custom_field(new_subject, 'deletion_1p', patient_1p_deletion)
-    explorer.set_custom_field(new_subject, 'deletion_19q', patient_19q_deletion)
-    explorer.set_custom_field(new_subject, 'grade', patient_grade)
-    explorer.set_custom_field(new_subject, 'type', patient_type.lower())
+    explorer.upload_directory_to_prearchive(os.path.join(DICOM_folder, i_subject))
 
-    # explorer.upload_directory_to_prearchive(os.path.join(DICOM_folder, i_subject))
+    explorer.archive_session()
 
-    T1_nifti_file = os.path.join(DICOM_folder, i_subject, 'T1.nii.gz')
-    T2_nifti_file = os.path.join(DICOM_folder, i_subject, 'T2.nii.gz')
 
-    T1_directory = os.path.join(DICOM_folder, i_subject, 'T1')
-    T2_directory = os.path.join(DICOM_folder, i_subject, 'T2')
-
-    converter = Dcm2nii()
-    converter.inputs.source_dir = T1_directory
-    converter.inputs.gzip_output = True
-    converter.inputs.output_dir = T1_directory
-    converter.inputs.source_in_filename = False
-    converter.inputs.protocol_in_filename = False
-    converter.inputs.date_in_filename = False
-    converter.inputs.events_in_filename = False
-    converter.inputs.id_in_filename = True
-    convert_result = converter.run()
-
-    T1_nifti_file = convert_result.outputs.converted_files
+    # T1_nifti_file = os.path.join(DICOM_folder, i_subject, 'T1.nii.gz')
+    # T2_nifti_file = os.path.join(DICOM_folder, i_subject, 'T2.nii.gz')
+    #
+    # T1_directory = os.path.join(DICOM_folder, i_subject, 'T1')
+    # T2_directory = os.path.join(DICOM_folder, i_subject, 'T2')
+    #
+    # converter = Dcm2nii()
+    # converter.inputs.source_dir = T1_directory
+    # converter.inputs.gzip_output = True
+    # converter.inputs.output_dir = T1_directory
+    # converter.inputs.source_in_filename = False
+    # converter.inputs.protocol_in_filename = False
+    # converter.inputs.date_in_filename = False
+    # converter.inputs.events_in_filename = False
+    # converter.inputs.id_in_filename = True
+    # convert_result = converter.run()
+    #
+    # T1_nifti_file = convert_result.outputs.converted_files
+    #
+    # explorer.upload_scan_resource(subject, experiment, scan, folder_name, file_name, file_location)
