@@ -15,7 +15,7 @@ DICOM_folder = '/media/DataDisk/TCIA_LGG/Processed_T1T2'
 # Path to genetics excel
 genetic_file = '/media/DataDisk/TCIA_LGG/TCIA_LGG_cases_159.xlsx'
 # Path to segmentation folder
-segmentation_folder = '/media/DataDisk/TCIA_LGG/NiFTiSegmentationsEdited'
+segmentation_folder = '/media/DataDisk/TCIA_LGG/Processed_Segmentations'
 
 
 def make_and_upload_nifti(subject_name, subject_XNAT, scan_sequence):
@@ -102,11 +102,11 @@ for i_index, i_subject in enumerate(subject_names):
 
     # Upload registered niftis, which were segmented
     T1_registered_nifti = os.path.join(segmentation_folder, i_subject,
-                                       i_subject + '_T1.nii.gz')
+                                       'T1.nii.gz')
     T2_registered_nifti = os.path.join(segmentation_folder, i_subject,
-                                       i_subject + '_T2.nii.gz')
+                                       'T2.nii.gz')
     Segmentation_registered_nifti = os.path.join(segmentation_folder, i_subject,
-                                                 i_subject + '-Segmentation.nii.gz')
+                                                 'Segmentation.nii.gz')
 
     upload_nifti(new_subject, 'T1', T1_registered_nifti, 'REGISTERED', 'image.nii.gz')
     upload_nifti(new_subject, 'T2', T2_registered_nifti, 'REGISTERED', 'image.nii.gz')
