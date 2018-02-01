@@ -26,8 +26,7 @@ def sort_dicoms_to_structured_folder(dicom_dir, out_dir,
 
     for i_patient_folder in patient_folders:
         patient_ID = os.path.basename(os.path.normpath(i_patient_folder))
-        if patient_ID != 'LGG-766':
-            continue
+
         print('Now processing: ' + patient_ID)
         # Patient 766 has two folders instead of one, however second folder
         # only has one scan, so we can ignore it
