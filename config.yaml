@@ -1,0 +1,9 @@
+folders:
+    data_folder: /media/DataDisk/TCIA_LGG_TEST
+
+XNAT:
+    XNAT_root: http://bigr-rad-xnat.erasmusmc.nl
+
+MR:
+    T2_min_repetition_time: 1000
+    T2_min_echo_time: 50
