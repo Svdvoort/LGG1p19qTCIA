@@ -18,8 +18,13 @@ def sort_nifti_files(data_folder, out_folder):
         print('Now processing: ' + patient_ID)
 
         T1_file = glob(os.path.join(i_patient_folder, '*T1*'))[0]
-        T2_file = glob(os.path.join(i_patient_folder, '*T2*'))[0]
-        Segmentation_file = glob(os.path.join(i_patient_folder, '*Seg*'))[0]
+        if patient_ID == 'LGG-223':
+            # For LGG-223 T2 and segmentation are actually switched
+            T2_file = 'LGG-223_Segnimentation.nii.gz'
+            Segmentation_file = 'LGG-223-T2.nii.gz'
+        else:
+            T2_file = glob(os.path.join(i_patient_folder, '*T2*'))[0]
+            Segmentation_file = glob(os.path.join(i_patient_folder, '*Seg*'))[0]
 
         out_patient_folder = os.path.join(out_folder, patient_ID)
         if not os.path.exists(out_patient_folder):
