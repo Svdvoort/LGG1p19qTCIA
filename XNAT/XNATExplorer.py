@@ -119,6 +119,7 @@ class XNATExplorer:
         experiment_uri = self.subjects_url + subject['label'] + '/experiments/' + experiment['ID']
         resource_uri = experiment_uri + '/resources/' + folder_name + '/files/'
 
+
         result = self.session.get(resource_uri).json()
 
         resource_list = result['ResultSet']['Result']
@@ -147,6 +148,7 @@ class XNATExplorer:
         result = self.session.get(resource_uri).json()
 
         resource_list = result['ResultSet']['Result']
+
 
         selected_resource_list = list()
 
